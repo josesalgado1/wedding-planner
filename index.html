@@ -794,6 +794,15 @@
       return !Object.values(FIREBASE_CONFIG).some((value) => String(value).includes("YOUR_"));
     }
 
+    function hashPassphrase(input) {
+      let hash = 0;
+      for (let i = 0; i < input.length; i += 1) {
+        hash = (hash << 5) - hash + input.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash).toString(36);
+    }
+
     function pushUpdate() {
       if (!firebaseReady || isApplyingRemote || !dbRef) return;
       const payload = {
@@ -1152,9 +1161,13 @@
     }
     if (hasFirebaseConfig()) {
       try {
+        const passphrase = prompt("Enter the shared passphrase");
+        if (!passphrase) {
+          syncStatus.textContent = "Local only";
+        } else {
         const app = firebase.initializeApp(FIREBASE_CONFIG);
         const db = firebase.database(app);
-        dbRef = db.ref("wedding-planner");
+        dbRef = db.ref(`wedding-planner/${hashPassphrase(passphrase)}`);
         firebaseReady = true;
         syncStatus.textContent = "Live sync";
         dbRef.on("value", (snapshot) => {
@@ -1169,6 +1182,7 @@
             pushUpdate();
           }
         });
+        }
       } catch (error) {
         syncStatus.textContent = "Sync error";
       }

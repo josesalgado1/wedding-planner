@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wedding Budget Pie</title>
+  <style>
+    :root {
+      --bg-1: #f2efe9;
+      --bg-2: #f9f6f1;
+      --ink: #2a2420;
+      --muted: #6d5f58;
+      --accent: #b36a5e;
+      --accent-2: #5f7b7a;
+      --card: #ffffff;
+      --shadow: 0 12px 30px rgba(42, 36, 32, 0.12);
+      --ring: rgba(179, 106, 94, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Alegreya", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      background:
+        radial-gradient(800px 400px at 10% 10%, #f8e9df 0%, transparent 60%),
+        radial-gradient(600px 300px at 90% 20%, #e4efe9 0%, transparent 65%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    header {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 24px;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 46px);
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: clamp(16px, 2.2vw, 20px);
+      max-width: 720px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .sync-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tab-btn {
+      border: 1px solid rgba(42, 36, 32, 0.2);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 15px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 8px 18px rgba(179, 106, 94, 0.25);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(42, 36, 32, 0.08);
+    }
+
+    .chart-card {
+      display: grid;
+      gap: 18px;
+      align-items: center;
+      justify-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-wrap {
+      width: min(380px, 90vw);
+      aspect-ratio: 1;
+      position: relative;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .center-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .center-label h2 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 30px);
+    }
+
+    .center-label p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      font-size: 15px;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .form-card {
+      display: grid;
+      gap: 16px;
+      animation: floatIn 0.7s ease-out;
+    }
+
+    .form-card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(42, 36, 32, 0.2);
+      font-family: inherit;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    .row {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .btn {
+      border: none;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(179, 106, 94, 0.35);
+    }
+
+    .btn.secondary {
+      background: rgba(95, 123, 122, 0.12);
+      color: var(--accent-2);
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .items {
+      display: grid;
+      gap: 12px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(179, 106, 94, 0.08);
+    }
+
+    .item strong { display: block; }
+    .item span { color: var(--muted); font-size: 14px; }
+
+    .mini-actions {
+      display: grid;
+      gap: 6px;
+    }
+
+    .mini-actions button {
+      border-radius: 999px;
+      border: 1px solid rgba(42, 36, 32, 0.2);
+      padding: 6px 10px;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .totals {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(95, 123, 122, 0.12);
+      font-weight: bold;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid rgba(42, 36, 32, 0.1);
+    }
+
+    .tooltip {
+      position: absolute;
+      padding: 8px 10px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      font-size: 14px;
+      color: var(--ink);
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -10px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .tooltip.show {
+      opacity: 1;
+      transform: translate(-50%, -16px);
+    }
+
+    .guest-card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .guest-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .guest-totals {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .guest-totals div {
+      background: rgba(179, 106, 94, 0.08);
+      padding: 8px 10px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .guest-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .guest-columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .guest-column h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    .guest-row {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(95, 123, 122, 0.12);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(95, 123, 122, 0.08);
+    }
+
+    .checkbox-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-2);
+    }
+
+    .guest-row strong {
+      display: block;
+    }
+
+    .bridal-star {
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(42, 36, 32, 0.15);
+    }
+
+    .rsvp.confirmed { background: #dff1e7; border-color: #9ac7b2; color: #1f5f41; }
+    .rsvp.declined { background: #f6dedc; border-color: #e0a4a0; color: #7a2d28; }
+    .rsvp.unknown { background: #f3eee6; border-color: #d5c6b3; color: #6b5648; }
+
+    .menu {
+      position: relative;
+      justify-self: end;
+    }
+
+    .menu summary {
+      list-style: none;
+      cursor: pointer;
+      border: 1px solid rgba(42, 36, 32, 0.2);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 18px;
+      line-height: 1;
+      background: #fff;
+      text-align: center;
+    }
+
+    .menu summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .menu-items {
+      position: absolute;
+      right: 0;
+      top: 30px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid rgba(42, 36, 32, 0.15);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      min-width: 140px;
+      z-index: 5;
+    }
+
+    .menu-items button {
+      border: none;
+      background: rgba(95, 123, 122, 0.12);
+      color: var(--ink);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 720px) {
+      .row.two { grid-template-columns: 1fr; }
+      .item { grid-template-columns: 1fr; }
+      .mini-actions { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Wedding Budget at a Glance</h1>
+      <div class="subtitle">Add each expense and watch the pie chart update instantly. Keep it simple for quick planning, or add more detail as you go.</div>
+      <div class="tabs" role="tablist" aria-label="Planner tabs">
+        <button class="tab-btn active" type="button" data-tab="budget" role="tab" aria-selected="true">Budget planner</button>
+        <button class="tab-btn" type="button" data-tab="guests" role="tab" aria-selected="false">Guest list</button>
+      </div>
+      <div class="sync-row">
+        <span class="pill" id="sync-status">Local only</span>
+        <span>Live sharing can be enabled with Firebase.</span>
+      </div>
+    </header>
+
+    <section class="tab-panel active" id="panel-budget" role="tabpanel">
+      <div class="layout">
+        <div class="card chart-card">
+          <div class="chart-wrap">
+            <svg viewBox="0 0 200 200" aria-label="Budget pie chart" role="img">
+              <g id="pie-slices"></g>
+              <circle cx="100" cy="100" r="45" fill="white"></circle>
+            </svg>
+            <div class="center-label">
+              <div>
+                <h2 id="total-display">$0</h2>
+                <p>Total planned</p>
+              </div>
+            </div>
+          </div>
+          <div class="legend" id="legend"></div>
+        </div>
+
+        <div class="card form-card">
+          <h3>Add or update an expense</h3>
+          <div class="row two">
+            <div>
+              <label for="budget-total">Total budget</label>
+              <input id="budget-total" type="number" min="0" step="1" placeholder="15000" />
+            </div>
+            <div>
+              <label>Remaining</label>
+              <div class="totals" style="margin-top: 6px;">
+                <span id="remaining-display">$0</span>
+                <span class="pill" id="percent-display">0% used</span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <label for="name">Expense name</label>
+            <input id="name" type="text" placeholder="Venue, Catering, Dress" />
+          </div>
+          <div class="row two">
+            <div>
+              <label for="planned">Planned amount</label>
+              <input id="planned" type="number" min="0" step="1" placeholder="2500" />
+            </div>
+            <div>
+              <label for="spent">Spent so far</label>
+              <input id="spent" type="number" min="0" step="1" placeholder="1200" />
+            </div>
+          </div>
+          <div class="row">
+            <label for="color">Color</label>
+            <input id="color" type="text" placeholder="Blush, Sage, Gold" />
+          </div>
+          <button class="btn primary" id="add">Add expense</button>
+          <div class="totals">
+            <span>Plan health</span>
+            <span class="pill" id="health">Start by adding expenses</span>
+          </div>
+          <div class="items" id="items"></div>
+          <button class="btn secondary" id="reset">Reset to sample data</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-guests" role="tabpanel">
+      <div class="layout">
+        <div class="card guest-card">
+          <div class="guest-header">
+            <div>
+              <h3 id="guest-title">Guest list</h3>
+              <div class="subtitle" id="guest-subtitle">Track RSVPs and bridal party.</div>
+            </div>
+            <button class="btn secondary" id="set-names">Set bride & groom names</button>
+          </div>
+          <div class="guest-totals" id="guest-totals"></div>
+          <div class="row two">
+            <div>
+              <label for="filter-rsvp">Filter by RSVP</label>
+              <select id="filter-rsvp">
+                <option value="all">All</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="declined">Declined</option>
+                <option value="unknown">Unknown</option>
+              </select>
+            </div>
+            <div>
+              <label for="filter-side">Filter by side</label>
+              <select id="filter-side">
+                <option value="all">All</option>
+                <option value="bride">Bride side</option>
+                <option value="groom">Groom side</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <label for="filter-bridal">Filter by bridal party</label>
+            <select id="filter-bridal">
+              <option value="all">All</option>
+              <option value="yes">Bridal party only</option>
+              <option value="no">Not bridal party</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="guest-name">Guest name</label>
+            <input id="guest-name" type="text" placeholder="Jordan Lee" />
+          </div>
+          <div class="row two">
+            <div>
+              <label for="guest-side">Side</label>
+              <select id="guest-side">
+                <option value="bride">Bride side</option>
+                <option value="groom">Groom side</option>
+              </select>
+            </div>
+            <div>
+              <label for="guest-rsvp">RSVP status</label>
+              <select id="guest-rsvp">
+                <option value="unknown">Unknown</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="declined">Declined</option>
+              </select>
+            </div>
+          </div>
+        <div class="row two">
+          <div>
+            <label for="guest-bridal">Bridal party</label>
+            <select id="guest-bridal">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div>
+            <label for="guest-color">Tag color (optional)</label>
+            <input id="guest-color" type="text" placeholder="Sage, Sand" />
+          </div>
+        </div>
+        <div class="row">
+          <label>Plus one</label>
+          <div class="checkbox-row">
+            <input id="guest-plusone" type="checkbox" />
+            <label for="guest-plusone">This guest has a plus one</label>
+          </div>
+        </div>
+        <div class="row">
+          <label for="guest-plusone-name">Plus one name (optional)</label>
+          <input id="guest-plusone-name" type="text" placeholder="Guest of honor" />
+        </div>
+          <button class="btn primary" id="add-guest">Add guest</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-guest-lists" role="tabpanel">
+      <div class="layout">
+        <div class="card">
+          <div class="guest-columns">
+            <div class="guest-column">
+              <h4 id="guest-bride-title">Bride side</h4>
+              <div class="guest-list" id="guest-list-bride"></div>
+            </div>
+            <div class="guest-column">
+              <h4 id="guest-groom-title">Groom side</h4>
+              <div class="guest-list" id="guest-list-groom"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script>
+    const palette = [
+      "#d8916f", "#c16f62", "#8a9a7b", "#5f7b7a", "#d9b380", "#b07aa1",
+      "#7d8bb6", "#b56d63", "#c4a082", "#88a4a6"
+    ];
+
+    const FIREBASE_CONFIG = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      appId: "YOUR_APP_ID"
+    };
+
+    const sample = [
+      { name: "Venue", planned: 3557, spent: 3557, color: palette[0] },
+      { name: "Catering", planned: 4200, spent: 0, color: palette[1] },
+      { name: "Photography", planned: 2400, spent: 0, color: palette[2] },
+      { name: "Attire", planned: 1800, spent: 0, color: palette[3] },
+      { name: "Flowers", planned: 1200, spent: 0, color: palette[4] }
+    ];
+
+    function normalizeItems(rawItems) {
+      const list = Array.isArray(rawItems) ? rawItems : [];
+      return list.map((item) => {
+        const planned = Number(item.planned);
+        const spent = Number(item.spent);
+        if (Number.isFinite(planned)) {
+          return {
+            name: item.name || "Expense",
+            planned,
+            spent: Number.isFinite(spent) ? spent : 0,
+            color: item.color || palette[0]
+          };
+        }
+        const amount = Number(item.amount) || 0;
+        return { name: item.name || "Expense", planned: amount, spent: amount, color: item.color || palette[0] };
+      });
+    }
+
+    function normalizeGuests(rawGuests) {
+      const list = Array.isArray(rawGuests) ? rawGuests : [];
+      return list.map((guest) => ({
+        name: guest.name || "Guest",
+        side: guest.side === "groom" ? "groom" : "bride",
+        rsvp: ["confirmed", "declined", "unknown"].includes(guest.rsvp) ? guest.rsvp : "unknown",
+        bridalParty: Boolean(guest.bridalParty),
+        color: guest.color || "",
+        plusOne: Boolean(guest.plusOne),
+        plusOneName: guest.plusOneName || ""
+      }));
+    }
+
+    let items = normalizeItems(JSON.parse(localStorage.getItem("wedding-budget") || "null") || sample);
+    let totalBudget = Number(localStorage.getItem("wedding-budget-total") || "15000");
+
+    const pie = document.getElementById("pie-slices");
+    const legend = document.getElementById("legend");
+    const itemsWrap = document.getElementById("items");
+    const totalDisplay = document.getElementById("total-display");
+    const health = document.getElementById("health");
+    const tooltip = document.getElementById("tooltip");
+    const budgetInput = document.getElementById("budget-total");
+    const remainingDisplay = document.getElementById("remaining-display");
+    const percentDisplay = document.getElementById("percent-display");
+    const guestTitle = document.getElementById("guest-title");
+    const guestSubtitle = document.getElementById("guest-subtitle");
+    const guestTotals = document.getElementById("guest-totals");
+    const guestBrideTitle = document.getElementById("guest-bride-title");
+    const guestGroomTitle = document.getElementById("guest-groom-title");
+    const guestListBride = document.getElementById("guest-list-bride");
+    const guestListGroom = document.getElementById("guest-list-groom");
+    const filterRsvp = document.getElementById("filter-rsvp");
+    const filterSide = document.getElementById("filter-side");
+    const filterBridal = document.getElementById("filter-bridal");
+    const guestNameInput = document.getElementById("guest-name");
+    const guestSideInput = document.getElementById("guest-side");
+    const guestRsvpInput = document.getElementById("guest-rsvp");
+    const guestBridalInput = document.getElementById("guest-bridal");
+    const guestColorInput = document.getElementById("guest-color");
+    const guestPlusOneInput = document.getElementById("guest-plusone");
+    const guestPlusOneNameInput = document.getElementById("guest-plusone-name");
+
+    const nameInput = document.getElementById("name");
+    const plannedInput = document.getElementById("planned");
+    const spentInput = document.getElementById("spent");
+    const colorInput = document.getElementById("color");
+    const tabs = document.querySelectorAll(".tab-btn");
+    const budgetPanel = document.getElementById("panel-budget");
+    const guestPanel = document.getElementById("panel-guests");
+    const guestListsPanel = document.getElementById("panel-guest-lists");
+
+    let guests = normalizeGuests(JSON.parse(localStorage.getItem("wedding-guests") || "null") || []);
+    let brideName = localStorage.getItem("wedding-bride-name") || "Bride";
+    let groomName = localStorage.getItem("wedding-groom-name") || "Groom";
+    let firebaseReady = false;
+    let isApplyingRemote = false;
+    const syncStatus = document.getElementById("sync-status");
+    const storedClientId = localStorage.getItem("wedding-client-id");
+    const clientId = storedClientId || `client-${Math.random().toString(16).slice(2)}`;
+    if (!storedClientId) localStorage.setItem("wedding-client-id", clientId);
+    let dbRef = null;
+
+    function formatMoney(value) {
+      return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    }
+
+    function sanitizeColor(input, fallback) {
+      if (!input) return fallback;
+      const test = document.createElement("div");
+      test.style.color = input;
+      return test.style.color ? input : fallback;
+    }
+
+    function updateStorage() {
+      localStorage.setItem("wedding-budget", JSON.stringify(items));
+      localStorage.setItem("wedding-budget-total", String(totalBudget));
+      pushUpdate();
+    }
+
+    function updateGuestStorage() {
+      localStorage.setItem("wedding-guests", JSON.stringify(guests));
+      localStorage.setItem("wedding-bride-name", brideName);
+      localStorage.setItem("wedding-groom-name", groomName);
+      pushUpdate();
+    }
+
+    function hasFirebaseConfig() {
+      return !Object.values(FIREBASE_CONFIG).some((value) => String(value).includes("YOUR_"));
+    }
+
+    function pushUpdate() {
+      if (!firebaseReady || isApplyingRemote || !dbRef) return;
+      const payload = {
+        budget: { items, totalBudget },
+        guests: { list: guests, brideName, groomName },
+        meta: { updatedAt: Date.now(), updatedBy: clientId }
+      };
+      dbRef.set(payload).catch(() => {
+        syncStatus.textContent = "Sync error";
+      });
+    }
+
+    function applyRemoteData(data) {
+      if (!data) return;
+      isApplyingRemote = true;
+      if (data.budget) {
+        items = normalizeItems(data.budget.items);
+        totalBudget = Number(data.budget.totalBudget) || totalBudget;
+        budgetInput.value = totalBudget;
+      }
+      if (data.guests) {
+        guests = normalizeGuests(data.guests.list);
+        brideName = data.guests.brideName || brideName;
+        groomName = data.guests.groomName || groomName;
+      }
+      localStorage.setItem("wedding-budget", JSON.stringify(items));
+      localStorage.setItem("wedding-budget-total", String(totalBudget));
+      localStorage.setItem("wedding-guests", JSON.stringify(guests));
+      localStorage.setItem("wedding-bride-name", brideName);
+      localStorage.setItem("wedding-groom-name", groomName);
+      isApplyingRemote = false;
+    }
+
+    function render() {
+      const totalPlanned = items.reduce((sum, item) => sum + item.planned, 0);
+      const totalSpent = items.reduce((sum, item) => sum + item.spent, 0);
+      totalDisplay.textContent = formatMoney(totalPlanned);
+      remainingDisplay.textContent = formatMoney(Math.max(totalBudget - totalSpent, 0));
+      const percent = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
+      percentDisplay.textContent = `${percent}% used`;
+
+      if (totalPlanned === 0) {
+        health.textContent = "Start by adding expenses";
+      } else if (totalSpent > totalBudget) {
+        health.textContent = "Over budget";
+      } else if (totalPlanned > totalBudget) {
+        health.textContent = "Planned exceeds budget";
+      } else {
+        health.textContent = "On track";
+      }
+
+      pie.innerHTML = "";
+      legend.innerHTML = "";
+      itemsWrap.innerHTML = "";
+
+      let currentAngle = 0;
+      const radius = 90;
+      const center = 100;
+
+      items.forEach((item, index) => {
+        const value = item.planned;
+        if (value <= 0) return;
+        const sliceAngle = totalPlanned > 0 ? (value / totalPlanned) * Math.PI * 2 : 0;
+        const x1 = center + radius * Math.cos(currentAngle);
+        const y1 = center + radius * Math.sin(currentAngle);
+        const x2 = center + radius * Math.cos(currentAngle + sliceAngle);
+        const y2 = center + radius * Math.sin(currentAngle + sliceAngle);
+        const largeArc = sliceAngle > Math.PI ? 1 : 0;
+
+        const pathData = [
+          `M ${center} ${center}`,
+          `L ${x1} ${y1}`,
+          `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
+          "Z"
+        ].join(" ");
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("fill", item.color);
+        path.addEventListener("mousemove", (event) => showTooltip(event, item, totalPlanned));
+        path.addEventListener("mouseleave", hideTooltip);
+        pie.appendChild(path);
+
+        const legendRow = document.createElement("div");
+        legendRow.className = "legend-row";
+        legendRow.innerHTML = `
+          <div class="swatch" style="background:${item.color}"></div>
+          <div>${item.name}</div>
+          <div>${formatMoney(item.planned)}</div>
+        `;
+        legend.appendChild(legendRow);
+
+        const itemRow = document.createElement("div");
+        itemRow.className = "item";
+        itemRow.innerHTML = `
+          <div>
+            <strong>${item.name}</strong>
+            <span>Planned ${formatMoney(item.planned)} • Spent ${formatMoney(item.spent)}</span>
+          </div>
+          <div class="mini-actions">
+            <button data-action="edit" data-index="${index}">Edit</button>
+            <button data-action="remove" data-index="${index}">Remove</button>
+          </div>
+        `;
+        itemsWrap.appendChild(itemRow);
+
+        currentAngle += sliceAngle;
+      });
+
+      if (items.length === 0 || totalPlanned === 0) {
+        legend.innerHTML = "Add an expense to see the chart.";
+      }
+    }
+
+    function renderGuests() {
+      const plusOneCount = guests.filter((guest) => guest.plusOne).length;
+      const total = guests.length + plusOneCount;
+      const brideCount = guests
+        .filter((guest) => guest.side === "bride")
+        .reduce((sum, guest) => sum + 1 + (guest.plusOne ? 1 : 0), 0);
+      const groomCount = guests
+        .filter((guest) => guest.side === "groom")
+        .reduce((sum, guest) => sum + 1 + (guest.plusOne ? 1 : 0), 0);
+      const bridalCount = guests.filter((guest) => guest.bridalParty).length;
+      const confirmed = guests.filter((guest) => guest.rsvp === "confirmed").length;
+      const declined = guests.filter((guest) => guest.rsvp === "declined").length;
+      const unknown = guests.filter((guest) => guest.rsvp === "unknown").length;
+
+      guestTitle.textContent = `Guest list for ${brideName} & ${groomName}`;
+      guestSubtitle.textContent = "Track RSVPs and bridal party at a glance.";
+      guestTotals.innerHTML = `
+        <div>Total: ${total}</div>
+        <div>${brideName}'s side: ${brideCount}</div>
+        <div>${groomName}'s side: ${groomCount}</div>
+        <div>Bridal party: ${bridalCount}</div>
+        <div>Plus ones: ${plusOneCount}</div>
+        <div>Confirmed: ${confirmed}</div>
+        <div>Declined: ${declined}</div>
+        <div>Unknown: ${unknown}</div>
+      `;
+
+      const filteredGuests = guests
+        .map((guest, index) => ({ guest, index }))
+        .filter(({ guest }) => {
+          if (filterRsvp.value !== "all" && guest.rsvp !== filterRsvp.value) return false;
+          if (filterSide.value !== "all" && guest.side !== filterSide.value) return false;
+          if (filterBridal.value !== "all") {
+            const bridalValue = guest.bridalParty ? "yes" : "no";
+            if (bridalValue !== filterBridal.value) return false;
+          }
+          return true;
+        });
+
+      guestListBride.innerHTML = "";
+      guestListGroom.innerHTML = "";
+      filteredGuests.forEach(({ guest, index }) => {
+        const row = document.createElement("div");
+        row.className = "guest-row";
+        const sideLabel = guest.side === "bride" ? `${brideName}'s side` : `${groomName}'s side`;
+        const bridalLabel = guest.bridalParty ? "Bridal party" : "Guest";
+        const colorSwatch = guest.color ? `<span class="tag" style="background:${guest.color}; color:#fff; border-color:transparent;">Tag</span>` : "";
+        const plusOneLabel = guest.plusOne
+          ? `<span class="tag">Plus one${guest.plusOneName ? `: ${guest.plusOneName}` : ""}</span>`
+          : "";
+        const star = guest.bridalParty ? "<span class=\"bridal-star\">★</span>" : "";
+        row.innerHTML = `
+          <div>
+            <strong>${star}${guest.name}</strong>
+            <div class="tags">
+              <span class="tag">${sideLabel}</span>
+              <span class="tag">${bridalLabel}</span>
+              <span class="tag rsvp ${guest.rsvp}">${guest.rsvp}</span>
+              ${plusOneLabel}
+              ${colorSwatch}
+            </div>
+          </div>
+          <details class="menu">
+            <summary aria-label="Guest actions">⋯</summary>
+            <div class="menu-items">
+              <button data-action="edit-guest" data-index="${index}">Edit</button>
+              <button data-action="toggle-bridal" data-index="${index}">Toggle bridal</button>
+              <button data-action="remove-guest" data-index="${index}">Remove</button>
+            </div>
+          </details>
+        `;
+        if (guest.side === "bride") {
+          guestListBride.appendChild(row);
+        } else {
+          guestListGroom.appendChild(row);
+        }
+      });
+
+      guestBrideTitle.textContent = `${brideName}'s side`;
+      guestGroomTitle.textContent = `${groomName}'s side`;
+
+      if (guests.length === 0) {
+        guestListBride.innerHTML = "<div class=\"subtitle\">Add a guest to get started.</div>";
+        guestListGroom.innerHTML = "";
+      } else if (filteredGuests.length === 0) {
+        guestListBride.innerHTML = "<div class=\"subtitle\">No guests match these filters.</div>";
+        guestListGroom.innerHTML = "";
+      }
+    }
+
+    function showTooltip(event, item, totalPlanned) {
+      const percent = totalPlanned ? Math.round((item.planned / totalPlanned) * 100) : 0;
+      tooltip.textContent = `${item.name}: planned ${formatMoney(item.planned)} (${percent}%), spent ${formatMoney(item.spent)}`;
+      tooltip.style.left = `${event.pageX}px`;
+      tooltip.style.top = `${event.pageY - 10}px`;
+      tooltip.classList.add("show");
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove("show");
+    }
+
+    function addExpense() {
+      const name = nameInput.value.trim();
+      const planned = Number(plannedInput.value);
+      const spent = Number(spentInput.value);
+      const colorValue = sanitizeColor(colorInput.value.trim(), palette[items.length % palette.length]);
+
+      if (!name || !Number.isFinite(planned) || planned <= 0 || !Number.isFinite(spent) || spent < 0) {
+        health.textContent = "Add a name, planned amount, and spent amount";
+        return;
+      }
+
+      items.push({ name, planned, spent, color: colorValue });
+      updateStorage();
+      render();
+      nameInput.value = "";
+      plannedInput.value = "";
+      spentInput.value = "";
+      colorInput.value = "";
+    }
+
+    function addGuest() {
+      const name = guestNameInput.value.trim();
+      const side = guestSideInput.value;
+      const rsvp = guestRsvpInput.value;
+      const bridalParty = guestBridalInput.value === "yes";
+      const colorValue = sanitizeColor(guestColorInput.value.trim(), "");
+      const plusOne = guestPlusOneInput.checked;
+      const plusOneName = guestPlusOneNameInput.value.trim();
+
+      if (!name) {
+        guestSubtitle.textContent = "Add a guest name to continue.";
+        return;
+      }
+
+      guests.push({ name, side, rsvp, bridalParty, color: colorValue, plusOne, plusOneName });
+      updateGuestStorage();
+      renderGuests();
+      guestNameInput.value = "";
+      guestRsvpInput.value = "unknown";
+      guestBridalInput.value = "no";
+      guestColorInput.value = "";
+      guestPlusOneInput.checked = false;
+      guestPlusOneNameInput.value = "";
+    }
+
+    function resetSample() {
+      items = sample.map((item) => ({ ...item }));
+      totalBudget = 15000;
+      budgetInput.value = totalBudget;
+      updateStorage();
+      render();
+    }
+
+    itemsWrap.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const index = Number(button.dataset.index);
+      if (!Number.isFinite(index)) return;
+
+      if (button.dataset.action === "remove") {
+        items.splice(index, 1);
+        updateStorage();
+        render();
+      }
+
+      if (button.dataset.action === "edit") {
+        const item = items[index];
+        nameInput.value = item.name;
+        plannedInput.value = item.planned;
+        spentInput.value = item.spent;
+        colorInput.value = item.color;
+        items.splice(index, 1);
+        updateStorage();
+        render();
+        nameInput.focus();
+      }
+    });
+
+    function handleGuestAction(event) {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const index = Number(button.dataset.index);
+      if (!Number.isFinite(index)) return;
+
+      if (button.dataset.action === "remove-guest") {
+        guests.splice(index, 1);
+        updateGuestStorage();
+        renderGuests();
+      }
+
+      if (button.dataset.action === "toggle-bridal") {
+        guests[index].bridalParty = !guests[index].bridalParty;
+        updateGuestStorage();
+        renderGuests();
+      }
+
+      if (button.dataset.action === "edit-guest") {
+        const guest = guests[index];
+        guestNameInput.value = guest.name;
+        guestSideInput.value = guest.side;
+        guestRsvpInput.value = guest.rsvp;
+        guestBridalInput.value = guest.bridalParty ? "yes" : "no";
+        guestColorInput.value = guest.color || "";
+        guestPlusOneInput.checked = Boolean(guest.plusOne);
+        guestPlusOneNameInput.value = guest.plusOneName || "";
+        guests.splice(index, 1);
+        updateGuestStorage();
+        renderGuests();
+        guestNameInput.focus();
+      }
+    }
+
+    guestListBride.addEventListener("click", handleGuestAction);
+    guestListGroom.addEventListener("click", handleGuestAction);
+
+    document.getElementById("add").addEventListener("click", addExpense);
+    document.getElementById("reset").addEventListener("click", resetSample);
+    document.getElementById("add-guest").addEventListener("click", addGuest);
+    function setActiveTab(target) {
+      tabs.forEach((btn) => {
+        const isActive = btn.dataset.tab === target;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+      budgetPanel.classList.toggle("active", target === "budget");
+      guestPanel.classList.toggle("active", target === "guests");
+      guestListsPanel.classList.toggle("active", target === "guests");
+      localStorage.setItem("wedding-active-tab", target);
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        setActiveTab(tab.dataset.tab);
+      });
+    });
+
+    const savedTab = localStorage.getItem("wedding-active-tab");
+    if (savedTab === "budget" || savedTab === "guests") {
+      setActiveTab(savedTab);
+    }
+    if (hasFirebaseConfig()) {
+      try {
+        const app = firebase.initializeApp(FIREBASE_CONFIG);
+        const db = firebase.database(app);
+        dbRef = db.ref("wedding-planner");
+        firebaseReady = true;
+        syncStatus.textContent = "Live sync";
+        dbRef.on("value", (snapshot) => {
+          const data = snapshot.val();
+          if (!data) return;
+          applyRemoteData(data);
+          render();
+          renderGuests();
+        });
+        dbRef.once("value").then((snapshot) => {
+          if (!snapshot.exists()) {
+            pushUpdate();
+          }
+        });
+      } catch (error) {
+        syncStatus.textContent = "Sync error";
+      }
+    }
+    document.getElementById("set-names").addEventListener("click", () => {
+      const bride = prompt("Bride's name", brideName);
+      if (bride) brideName = bride.trim();
+      const groom = prompt("Groom's name", groomName);
+      if (groom) groomName = groom.trim();
+      updateGuestStorage();
+      renderGuests();
+    });
+    spentInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") addExpense();
+    });
+    guestNameInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") addGuest();
+    });
+    [filterRsvp, filterSide, filterBridal].forEach((filter) => {
+      filter.addEventListener("change", renderGuests);
+    });
+    budgetInput.addEventListener("change", () => {
+      const value = Number(budgetInput.value);
+      if (Number.isFinite(value) && value > 0) {
+        totalBudget = value;
+        updateStorage();
+        render();
+      }
+    });
+
+    budgetInput.value = totalBudget;
+    render();
+    renderGuests();
+  </script>
+</body>
+</html>

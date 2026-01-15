@@ -459,6 +459,64 @@
       font-family: inherit;
     }
 
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 36, 32, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 20;
+      backdrop-filter: blur(4px);
+    }
+
+    .auth-overlay.hidden {
+      display: none;
+    }
+
+    .auth-card {
+      width: min(440px, 100%);
+      display: grid;
+      gap: 14px;
+    }
+
+    .auth-card h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .auth-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .auth-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .auth-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .auth-error {
+      min-height: 18px;
+      font-size: 13px;
+      color: #b14f45;
+    }
+
+    .auth-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -662,9 +720,36 @@
     </section>
   </div>
 
+  <div class="auth-overlay hidden" id="auth-overlay" aria-hidden="true">
+    <div class="card auth-card">
+      <h3>Sign in to sync</h3>
+      <p class="auth-subtitle">Use the email and password you created in Firebase to sync with your fiancee.</p>
+      <form class="auth-form" id="auth-form">
+        <div class="row">
+          <label for="auth-email">Email</label>
+          <input id="auth-email" type="email" autocomplete="email" required />
+        </div>
+        <div class="row">
+          <label for="auth-password">Password</label>
+          <input id="auth-password" type="password" autocomplete="current-password" required />
+        </div>
+        <label class="auth-toggle" for="auth-toggle">
+          <input id="auth-toggle" type="checkbox" />
+          Show password
+        </label>
+        <div class="auth-error" id="auth-error" role="alert"></div>
+        <div class="auth-actions">
+          <button class="btn primary" type="submit">Sign in &amp; sync</button>
+          <button class="btn secondary" type="button" id="auth-skip">Continue locally</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="tooltip" id="tooltip"></div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script>
     const palette = [
@@ -673,11 +758,11 @@
     ];
 
     const FIREBASE_CONFIG = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyA9Qf87gxRvpejeQm4xx89eBgMSdSd5x8c",
+      authDomain: "wedding-planner-80325.firebaseapp.com",
+      databaseURL: "https://wedding-planner-80325-default-rtdb.firebaseio.com",
+      projectId: "wedding-planner-80325",
+      appId: "1:318745543355:web:09da4ae79a0f772e6c9f9e"
     };
 
     const sample = [
@@ -764,10 +849,21 @@
     let firebaseReady = false;
     let isApplyingRemote = false;
     const syncStatus = document.getElementById("sync-status");
+    const authOverlay = document.getElementById("auth-overlay");
+    const authForm = document.getElementById("auth-form");
+    const authEmail = document.getElementById("auth-email");
+    const authPassword = document.getElementById("auth-password");
+    const authToggle = document.getElementById("auth-toggle");
+    const authError = document.getElementById("auth-error");
+    const authSkip = document.getElementById("auth-skip");
     const storedClientId = localStorage.getItem("wedding-client-id");
     const clientId = storedClientId || `client-${Math.random().toString(16).slice(2)}`;
     if (!storedClientId) localStorage.setItem("wedding-client-id", clientId);
     let dbRef = null;
+    let firebaseApp = null;
+    let firebaseAuth = null;
+    let firebaseDb = null;
+    let allowLocalOnly = false;
 
     function formatMoney(value) {
       return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -797,13 +893,35 @@
       return !Object.values(FIREBASE_CONFIG).some((value) => String(value).includes("YOUR_"));
     }
 
-    function hashPassphrase(input) {
-      let hash = 0;
-      for (let i = 0; i < input.length; i += 1) {
-        hash = (hash << 5) - hash + input.charCodeAt(i);
-        hash |= 0;
-      }
-      return Math.abs(hash).toString(36);
+    function showAuthOverlay() {
+      if (!authOverlay) return;
+      authOverlay.classList.remove("hidden");
+      authOverlay.setAttribute("aria-hidden", "false");
+    }
+
+    function hideAuthOverlay() {
+      if (!authOverlay) return;
+      authOverlay.classList.add("hidden");
+      authOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    function startLiveSync() {
+      if (firebaseReady || !firebaseDb) return;
+      dbRef = firebaseDb.ref("wedding-planner/shared");
+      firebaseReady = true;
+      syncStatus.textContent = "Live sync";
+      dbRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+        applyRemoteData(data);
+        render();
+        renderGuests();
+      });
+      dbRef.once("value").then((snapshot) => {
+        if (!snapshot.exists()) {
+          pushUpdate();
+        }
+      });
     }
 
     function pushUpdate() {
@@ -1164,28 +1282,51 @@
     }
     if (hasFirebaseConfig()) {
       try {
-        const passphrase = prompt("Enter the shared passphrase");
-        if (!passphrase) {
-          syncStatus.textContent = "Local only";
-        } else {
-        const app = firebase.initializeApp(FIREBASE_CONFIG);
-        const db = firebase.database(app);
-        dbRef = db.ref(`wedding-planner/${hashPassphrase(passphrase)}`);
-        firebaseReady = true;
-        syncStatus.textContent = "Live sync";
-        dbRef.on("value", (snapshot) => {
-          const data = snapshot.val();
-          if (!data) return;
-          applyRemoteData(data);
-          render();
-          renderGuests();
+        firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+        firebaseAuth = firebase.auth(firebaseApp);
+        firebaseDb = firebase.database(firebaseApp);
+
+        authToggle.addEventListener("change", () => {
+          authPassword.type = authToggle.checked ? "text" : "password";
         });
-        dbRef.once("value").then((snapshot) => {
-          if (!snapshot.exists()) {
-            pushUpdate();
+
+        authSkip.addEventListener("click", () => {
+          allowLocalOnly = true;
+          hideAuthOverlay();
+          syncStatus.textContent = "Local only";
+        });
+
+        authForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const email = authEmail.value.trim();
+          const password = authPassword.value;
+          authError.textContent = "";
+          if (!email || !password) {
+            authError.textContent = "Enter email and password.";
+            return;
+          }
+          const submitButton = authForm.querySelector("button[type='submit']");
+          submitButton.disabled = true;
+          firebaseAuth.signInWithEmailAndPassword(email, password).then(() => {
+            authError.textContent = "";
+            startLiveSync();
+            hideAuthOverlay();
+          }).catch(() => {
+            authError.textContent = "Auth failed. Check your email and password.";
+          }).finally(() => {
+            submitButton.disabled = false;
+          });
+        });
+
+        firebaseAuth.onAuthStateChanged((user) => {
+          if (user) {
+            startLiveSync();
+            hideAuthOverlay();
+          } else if (!allowLocalOnly) {
+            showAuthOverlay();
+            syncStatus.textContent = "Local only";
           }
         });
-        }
       } catch (error) {
         syncStatus.textContent = "Sync error";
       }

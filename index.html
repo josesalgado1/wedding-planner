@@ -335,11 +335,25 @@
       color: var(--muted);
     }
 
-    .guest-totals div {
+    .guest-totals .total-chip {
       background: rgba(179, 106, 94, 0.08);
       padding: 8px 10px;
       border-radius: 12px;
       text-align: center;
+    }
+
+    .guest-totals .total-toggle {
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .guest-totals .total-toggle.active {
+      background: rgba(95, 123, 122, 0.2);
+      color: var(--ink);
+      box-shadow: 0 6px 14px rgba(95, 123, 122, 0.2);
     }
 
     .guest-list {
@@ -625,33 +639,6 @@
             <button class="btn secondary" id="set-names">Set bride & groom names</button>
           </div>
           <div class="guest-totals" id="guest-totals"></div>
-          <div class="row two">
-            <div>
-              <label for="filter-rsvp">Filter by RSVP</label>
-              <select id="filter-rsvp">
-                <option value="all">All</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="declined">Declined</option>
-                <option value="unknown">Unknown</option>
-              </select>
-            </div>
-            <div>
-              <label for="filter-side">Filter by side</label>
-              <select id="filter-side">
-                <option value="all">All</option>
-                <option value="bride">Bride side</option>
-                <option value="groom">Groom side</option>
-              </select>
-            </div>
-          </div>
-          <div class="row">
-            <label for="filter-bridal">Filter by bridal party</label>
-            <select id="filter-bridal">
-              <option value="all">All</option>
-              <option value="yes">Bridal party only</option>
-              <option value="no">Not bridal party</option>
-            </select>
-          </div>
           <div class="row">
             <label for="guest-name">Guest name</label>
             <input id="guest-name" type="text" placeholder="Jordan Lee" />
@@ -823,9 +810,6 @@
     const guestGroomTitle = document.getElementById("guest-groom-title");
     const guestListBride = document.getElementById("guest-list-bride");
     const guestListGroom = document.getElementById("guest-list-groom");
-    const filterRsvp = document.getElementById("filter-rsvp");
-    const filterSide = document.getElementById("filter-side");
-    const filterBridal = document.getElementById("filter-bridal");
     const guestNameInput = document.getElementById("guest-name");
     const guestSideInput = document.getElementById("guest-side");
     const guestRsvpInput = document.getElementById("guest-rsvp");
@@ -842,6 +826,7 @@
     const budgetPanel = document.getElementById("panel-budget");
     const guestPanel = document.getElementById("panel-guests");
     const guestListsPanel = document.getElementById("panel-guest-lists");
+    const guestFilters = { rsvp: "all", side: "all", bridal: "all" };
 
     let guests = normalizeGuests(JSON.parse(localStorage.getItem("wedding-guests") || "null") || []);
     let brideName = localStorage.getItem("wedding-bride-name") || "Bride";
@@ -891,6 +876,10 @@
 
     function hasFirebaseConfig() {
       return !Object.values(FIREBASE_CONFIG).some((value) => String(value).includes("YOUR_"));
+    }
+
+    function isFilterActive(filterKey, value) {
+      return guestFilters[filterKey] === value;
     }
 
     function showAuthOverlay() {
@@ -1055,24 +1044,24 @@
       guestTitle.textContent = `Guest list for ${brideName} & ${groomName}`;
       guestSubtitle.textContent = "Track RSVPs and bridal party at a glance.";
       guestTotals.innerHTML = `
-        <div>Total: ${total}</div>
-        <div>${brideName}'s side: ${brideCount}</div>
-        <div>${groomName}'s side: ${groomCount}</div>
-        <div>Bridal party: ${bridalCount}</div>
-        <div>Plus ones: ${plusOneCount}</div>
-        <div>Confirmed: ${confirmed}</div>
-        <div>Declined: ${declined}</div>
-        <div>Unknown: ${unknown}</div>
+        <span class="total-chip">Total: ${total}</span>
+        <button class="total-chip total-toggle ${isFilterActive("side", "bride") ? "active" : ""}" type="button" data-filter="side" data-value="bride" aria-pressed="${isFilterActive("side", "bride")}">${brideName}'s side: ${brideCount}</button>
+        <button class="total-chip total-toggle ${isFilterActive("side", "groom") ? "active" : ""}" type="button" data-filter="side" data-value="groom" aria-pressed="${isFilterActive("side", "groom")}">${groomName}'s side: ${groomCount}</button>
+        <button class="total-chip total-toggle ${isFilterActive("bridal", "yes") ? "active" : ""}" type="button" data-filter="bridal" data-value="yes" aria-pressed="${isFilterActive("bridal", "yes")}">Bridal party: ${bridalCount}</button>
+        <span class="total-chip">Plus ones: ${plusOneCount}</span>
+        <button class="total-chip total-toggle ${isFilterActive("rsvp", "confirmed") ? "active" : ""}" type="button" data-filter="rsvp" data-value="confirmed" aria-pressed="${isFilterActive("rsvp", "confirmed")}">Confirmed: ${confirmed}</button>
+        <button class="total-chip total-toggle ${isFilterActive("rsvp", "declined") ? "active" : ""}" type="button" data-filter="rsvp" data-value="declined" aria-pressed="${isFilterActive("rsvp", "declined")}">Declined: ${declined}</button>
+        <button class="total-chip total-toggle ${isFilterActive("rsvp", "unknown") ? "active" : ""}" type="button" data-filter="rsvp" data-value="unknown" aria-pressed="${isFilterActive("rsvp", "unknown")}">Unknown: ${unknown}</button>
       `;
 
       const filteredGuests = guests
         .map((guest, index) => ({ guest, index }))
         .filter(({ guest }) => {
-          if (filterRsvp.value !== "all" && guest.rsvp !== filterRsvp.value) return false;
-          if (filterSide.value !== "all" && guest.side !== filterSide.value) return false;
-          if (filterBridal.value !== "all") {
+          if (guestFilters.rsvp !== "all" && guest.rsvp !== guestFilters.rsvp) return false;
+          if (guestFilters.side !== "all" && guest.side !== guestFilters.side) return false;
+          if (guestFilters.bridal !== "all") {
             const bridalValue = guest.bridalParty ? "yes" : "no";
-            if (bridalValue !== filterBridal.value) return false;
+            if (bridalValue !== guestFilters.bridal) return false;
           }
           return true;
         });
@@ -1345,8 +1334,14 @@
     guestNameInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") addGuest();
     });
-    [filterRsvp, filterSide, filterBridal].forEach((filter) => {
-      filter.addEventListener("change", renderGuests);
+    guestTotals.addEventListener("click", (event) => {
+      const button = event.target.closest(".total-toggle");
+      if (!button) return;
+      const filterKey = button.dataset.filter;
+      const filterValue = button.dataset.value;
+      if (!filterKey) return;
+      guestFilters[filterKey] = guestFilters[filterKey] === filterValue ? "all" : filterValue;
+      renderGuests();
     });
     budgetInput.addEventListener("change", () => {
       const value = Number(budgetInput.value);

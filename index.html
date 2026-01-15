@@ -159,6 +159,31 @@
       width: 100%;
     }
 
+    .chart-toggle {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .chart-toggle button {
+      border: 1px solid rgba(42, 36, 32, 0.2);
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .chart-toggle button.active {
+      background: var(--accent-2);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 6px 14px rgba(95, 123, 122, 0.25);
+    }
+
     .legend-row {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -577,9 +602,13 @@
             <div class="center-label">
               <div>
                 <h2 id="total-display">$0</h2>
-                <p>Total planned</p>
+                <p id="total-label">Total planned</p>
               </div>
             </div>
+          </div>
+          <div class="chart-toggle" role="group" aria-label="Budget view">
+            <button class="active" type="button" data-view="planned">Planned</button>
+            <button type="button" data-view="spent">Spent</button>
           </div>
           <div class="legend" id="legend"></div>
         </div>
@@ -798,6 +827,7 @@
     const legend = document.getElementById("legend");
     const itemsWrap = document.getElementById("items");
     const totalDisplay = document.getElementById("total-display");
+    const totalLabel = document.getElementById("total-label");
     const health = document.getElementById("health");
     const tooltip = document.getElementById("tooltip");
     const budgetInput = document.getElementById("budget-total");
@@ -827,6 +857,8 @@
     const guestPanel = document.getElementById("panel-guests");
     const guestListsPanel = document.getElementById("panel-guest-lists");
     const guestFilters = { rsvp: "all", side: "all", bridal: "all" };
+    const chartToggles = document.querySelectorAll(".chart-toggle button");
+    let budgetView = localStorage.getItem("wedding-budget-view") || "planned";
 
     let guests = normalizeGuests(JSON.parse(localStorage.getItem("wedding-guests") || "null") || []);
     let brideName = localStorage.getItem("wedding-bride-name") || "Bride";
@@ -946,13 +978,24 @@
       isApplyingRemote = false;
     }
 
+    function updateChartToggles() {
+      chartToggles.forEach((button) => {
+        const isActive = button.dataset.view === budgetView;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+      totalLabel.textContent = budgetView === "spent" ? "Total spent" : "Total planned";
+    }
+
     function render() {
       const totalPlanned = items.reduce((sum, item) => sum + item.planned, 0);
       const totalSpent = items.reduce((sum, item) => sum + item.spent, 0);
-      totalDisplay.textContent = formatMoney(totalPlanned);
+      const displayTotal = budgetView === "spent" ? totalSpent : totalPlanned;
+      totalDisplay.textContent = formatMoney(displayTotal);
       remainingDisplay.textContent = formatMoney(Math.max(totalBudget - totalSpent, 0));
       const percent = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
       percentDisplay.textContent = `${percent}% used`;
+      updateChartToggles();
 
       if (totalPlanned === 0) {
         health.textContent = "Start by adding expenses";
@@ -973,9 +1016,9 @@
       const center = 100;
 
       items.forEach((item, index) => {
-        const value = item.planned;
+        const value = budgetView === "spent" ? item.spent : item.planned;
         if (value <= 0) return;
-        const sliceAngle = totalPlanned > 0 ? (value / totalPlanned) * Math.PI * 2 : 0;
+        const sliceAngle = displayTotal > 0 ? (value / displayTotal) * Math.PI * 2 : 0;
         const x1 = center + radius * Math.cos(currentAngle);
         const y1 = center + radius * Math.sin(currentAngle);
         const x2 = center + radius * Math.cos(currentAngle + sliceAngle);
@@ -992,7 +1035,7 @@
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", pathData);
         path.setAttribute("fill", item.color);
-        path.addEventListener("mousemove", (event) => showTooltip(event, item, totalPlanned));
+        path.addEventListener("mousemove", (event) => showTooltip(event, item, displayTotal));
         path.addEventListener("mouseleave", hideTooltip);
         pie.appendChild(path);
 
@@ -1001,7 +1044,7 @@
         legendRow.innerHTML = `
           <div class="swatch" style="background:${item.color}"></div>
           <div>${item.name}</div>
-          <div>${formatMoney(item.planned)}</div>
+          <div>${formatMoney(value)}</div>
         `;
         legend.appendChild(legendRow);
 
@@ -1022,7 +1065,7 @@
         currentAngle += sliceAngle;
       });
 
-      if (items.length === 0 || totalPlanned === 0) {
+      if (items.length === 0 || displayTotal === 0) {
         legend.innerHTML = "Add an expense to see the chart.";
       }
     }
@@ -1117,9 +1160,11 @@
       }
     }
 
-    function showTooltip(event, item, totalPlanned) {
-      const percent = totalPlanned ? Math.round((item.planned / totalPlanned) * 100) : 0;
-      tooltip.textContent = `${item.name}: planned ${formatMoney(item.planned)} (${percent}%), spent ${formatMoney(item.spent)}`;
+    function showTooltip(event, item, totalValue) {
+      const value = budgetView === "spent" ? item.spent : item.planned;
+      const percent = totalValue ? Math.round((value / totalValue) * 100) : 0;
+      const label = budgetView === "spent" ? "spent" : "planned";
+      tooltip.textContent = `${item.name}: ${label} ${formatMoney(value)} (${percent}%), planned ${formatMoney(item.planned)}, spent ${formatMoney(item.spent)}`;
       tooltip.style.left = `${event.pageX}px`;
       tooltip.style.top = `${event.pageY - 10}px`;
       tooltip.classList.add("show");
@@ -1342,6 +1387,15 @@
       if (!filterKey) return;
       guestFilters[filterKey] = guestFilters[filterKey] === filterValue ? "all" : filterValue;
       renderGuests();
+    });
+    chartToggles.forEach((button) => {
+      button.addEventListener("click", () => {
+        const view = button.dataset.view;
+        if (!view || view === budgetView) return;
+        budgetView = view;
+        localStorage.setItem("wedding-budget-view", budgetView);
+        render();
+      });
     });
     budgetInput.addEventListener("change", () => {
       const value = Number(budgetInput.value);

@@ -264,6 +264,11 @@
       color: var(--accent-2);
     }
 
+    .btn.danger {
+      background: rgba(177, 79, 69, 0.12);
+      color: #7a3c32;
+    }
+
     .btn:active { transform: scale(0.98); }
 
     .items {
@@ -392,6 +397,163 @@
       gap: 14px;
     }
 
+    .venue-card {
+      text-align: center;
+    }
+
+    .venue-card h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .venue-meta {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .venue-highlight {
+      background: rgba(179, 106, 94, 0.08);
+      padding: 12px;
+      border-radius: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .venue-menu {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+    }
+
+    .venue-card {
+      position: relative;
+    }
+
+    .venue-menu summary {
+      list-style: none;
+      cursor: pointer;
+      border: 1px solid rgba(42, 36, 32, 0.2);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 18px;
+      line-height: 1;
+      background: #fff;
+      text-align: center;
+    }
+
+    .venue-menu summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .venue-menu-items {
+      position: absolute;
+      right: 0;
+      top: 30px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid rgba(42, 36, 32, 0.15);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      min-width: 160px;
+      z-index: 5;
+    }
+
+    .venue-menu-items button {
+      border: none;
+      background: rgba(95, 123, 122, 0.12);
+      color: var(--ink);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: not-allowed;
+      font-family: inherit;
+    }
+
+    .vendor-card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .vendor-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .vendor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .vendor-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .vendor-group h4 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .vendor-tile {
+      border: 1px solid rgba(42, 36, 32, 0.12);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(179, 106, 94, 0.08);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 16px;
+      text-align: left;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .vendor-tile:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(42, 36, 32, 0.12);
+    }
+
+    .vendor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .modal-error {
+      min-height: 18px;
+      font-size: 13px;
+      color: #b14f45;
+    }
+
+    .vendor-row {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(179, 106, 94, 0.08);
+    }
+
+    .vendor-row .meta {
+      font-size: 14px;
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+    }
+
+    .vendor-row h4 {
+      margin: 0;
+      font-size: 18px;
+    }
+
     .guest-column h4 {
       margin: 0 0 8px;
       font-size: 16px;
@@ -404,6 +566,13 @@
       padding: 12px;
       border-radius: 16px;
       background: rgba(95, 123, 122, 0.12);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .guest-row:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(42, 36, 32, 0.12);
     }
 
     .checkbox-row {
@@ -556,6 +725,77 @@
       gap: 10px;
     }
 
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 36, 32, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 30;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-card {
+      width: min(520px, 100%);
+      display: grid;
+      gap: 16px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: rgba(42, 36, 32, 0.1);
+      color: var(--ink);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .modal-title {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--ink);
+    }
+
+    .modal-subtitle {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .modal-row {
+      display: grid;
+      gap: 10px;
+    }
+
+    .modal-row.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .modal-row textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -584,6 +824,7 @@
       <div class="tabs" role="tablist" aria-label="Planner tabs">
         <button class="tab-btn active" type="button" data-tab="budget" role="tab" aria-selected="true">Budget planner</button>
         <button class="tab-btn" type="button" data-tab="guests" role="tab" aria-selected="false">Guest list</button>
+        <button class="tab-btn" type="button" data-tab="vendors" role="tab" aria-selected="false">Vendors</button>
       </div>
       <div class="sync-row">
         <span class="pill" id="sync-status">Local only</span>
@@ -734,6 +975,30 @@
         </div>
       </div>
     </section>
+
+    <section class="tab-panel" id="panel-vendors" role="tabpanel">
+      <div class="card venue-card">
+        <details class="venue-menu">
+          <summary aria-label="Venue options">⋯</summary>
+          <div class="venue-menu-items">
+            <button type="button" disabled>Change venue (soon)</button>
+          </div>
+        </details>
+        <h3>The Larimore</h3>
+        <div class="venue-meta">St. Louis, MO</div>
+        <div class="venue-highlight">
+          <div>Address: 11475 Lilac Ave., St. Louis, MO 63138</div>
+          <div>Date: 11/19/26</div>
+        </div>
+      </div>
+      <div class="card vendor-card" style="margin-top: 22px;">
+        <div class="vendor-header">
+          <h3>Possible vendors</h3>
+          <button class="btn secondary" type="button" id="add-vendor">Add vendor</button>
+        </div>
+        <div class="vendor-list vendor-grid" id="vendor-list"></div>
+      </div>
+    </section>
   </div>
 
   <div class="auth-overlay hidden" id="auth-overlay" aria-hidden="true">
@@ -757,6 +1022,91 @@
         <div class="auth-actions">
           <button class="btn primary" type="submit">Sign in &amp; sync</button>
           <button class="btn secondary" type="button" id="auth-skip">Continue locally</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="guest-modal" aria-hidden="true">
+    <div class="card modal-card">
+      <button class="modal-close" type="button" id="guest-modal-close" aria-label="Close">×</button>
+      <form id="guest-modal-form">
+        <input type="hidden" id="guest-modal-index" />
+        <div class="modal-row">
+          <input class="modal-title" id="guest-modal-name" type="text" placeholder="Guest name" />
+          <input class="modal-subtitle" id="guest-modal-plusone" type="text" placeholder="Plus one name (optional)" />
+        </div>
+        <div class="modal-row two">
+          <div>
+            <label for="guest-modal-phone">Phone</label>
+            <input id="guest-modal-phone" type="tel" placeholder="(555) 123-4567" />
+          </div>
+          <div>
+            <label for="guest-modal-email">Email</label>
+            <input id="guest-modal-email" type="email" placeholder="hello@example.com" />
+          </div>
+        </div>
+        <div class="modal-row">
+          <label for="guest-modal-address">Address</label>
+          <input id="guest-modal-address" type="text" placeholder="123 Main St, City, State ZIP" />
+        </div>
+        <div class="modal-row">
+          <label for="guest-modal-notes">Notes</label>
+          <textarea id="guest-modal-notes" placeholder="Dietary restrictions, save the date sent, etc."></textarea>
+        </div>
+        <div class="modal-row">
+          <button class="btn primary" type="submit">Save details</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="vendor-modal" aria-hidden="true">
+    <div class="card modal-card">
+      <button class="modal-close" type="button" id="vendor-modal-close" aria-label="Close">×</button>
+      <form id="vendor-modal-form">
+        <input type="hidden" id="vendor-modal-index" />
+        <div class="modal-row">
+          <input class="modal-title" id="vendor-modal-name" type="text" placeholder="Vendor name" />
+        </div>
+        <div class="modal-row">
+          <label for="vendor-modal-category">Category</label>
+          <select id="vendor-modal-category"></select>
+        </div>
+        <div class="modal-row two">
+          <div>
+            <label for="vendor-modal-contact">Contact</label>
+            <input id="vendor-modal-contact" type="text" placeholder="Contact name" />
+          </div>
+          <div>
+            <label for="vendor-modal-phone">Phone</label>
+            <input id="vendor-modal-phone" type="tel" placeholder="(555) 555-5555" />
+          </div>
+        </div>
+        <div class="modal-row two">
+          <div>
+            <label for="vendor-modal-email">Email</label>
+            <input id="vendor-modal-email" type="email" placeholder="hello@vendor.com" />
+          </div>
+          <div>
+            <label for="vendor-modal-website">Website</label>
+            <input id="vendor-modal-website" type="url" placeholder="https://vendor.com" />
+          </div>
+        </div>
+        <div class="modal-row two">
+          <div>
+            <label for="vendor-modal-quote">Quote</label>
+            <input id="vendor-modal-quote" type="number" min="0" step="1" placeholder="3500" />
+          </div>
+          <div>
+            <label for="vendor-modal-notes">Notes</label>
+            <input id="vendor-modal-notes" type="text" placeholder="Top choice, follow up in April." />
+          </div>
+        </div>
+        <div class="modal-error" id="vendor-modal-error" role="alert"></div>
+        <div class="modal-row two">
+          <button class="btn primary" type="submit">Save vendor</button>
+          <button class="btn danger" type="button" id="vendor-modal-delete">Delete vendor</button>
         </div>
       </form>
     </div>
@@ -816,7 +1166,25 @@
         bridalParty: Boolean(guest.bridalParty),
         color: guest.color || "",
         plusOne: Boolean(guest.plusOne),
-        plusOneName: guest.plusOneName || ""
+        plusOneName: guest.plusOneName || "",
+        phone: guest.phone || "",
+        email: guest.email || "",
+        address: guest.address || "",
+        notes: guest.notes || ""
+      }));
+    }
+
+    function normalizeVendors(rawVendors) {
+      const list = Array.isArray(rawVendors) ? rawVendors : [];
+      return list.map((vendor) => ({
+        category: vendor.category || "General",
+        name: vendor.name || "Vendor",
+        contact: vendor.contact || "",
+        phone: vendor.phone || "",
+        email: vendor.email || "",
+        website: vendor.website || "",
+        quote: Number(vendor.quote) || 0,
+        notes: vendor.notes || ""
       }));
     }
 
@@ -847,6 +1215,32 @@
     const guestColorInput = document.getElementById("guest-color");
     const guestPlusOneInput = document.getElementById("guest-plusone");
     const guestPlusOneNameInput = document.getElementById("guest-plusone-name");
+    const guestModal = document.getElementById("guest-modal");
+    const guestModalClose = document.getElementById("guest-modal-close");
+    const guestModalForm = document.getElementById("guest-modal-form");
+    const guestModalIndex = document.getElementById("guest-modal-index");
+    const guestModalName = document.getElementById("guest-modal-name");
+    const guestModalPlusOne = document.getElementById("guest-modal-plusone");
+    const guestModalPhone = document.getElementById("guest-modal-phone");
+    const guestModalEmail = document.getElementById("guest-modal-email");
+    const guestModalAddress = document.getElementById("guest-modal-address");
+    const guestModalNotes = document.getElementById("guest-modal-notes");
+    const vendorList = document.getElementById("vendor-list");
+    const addVendorButton = document.getElementById("add-vendor");
+    const vendorModal = document.getElementById("vendor-modal");
+    const vendorModalClose = document.getElementById("vendor-modal-close");
+    const vendorModalForm = document.getElementById("vendor-modal-form");
+    const vendorModalIndex = document.getElementById("vendor-modal-index");
+    const vendorModalName = document.getElementById("vendor-modal-name");
+    const vendorModalCategory = document.getElementById("vendor-modal-category");
+    const vendorModalContact = document.getElementById("vendor-modal-contact");
+    const vendorModalPhone = document.getElementById("vendor-modal-phone");
+    const vendorModalEmail = document.getElementById("vendor-modal-email");
+    const vendorModalWebsite = document.getElementById("vendor-modal-website");
+    const vendorModalQuote = document.getElementById("vendor-modal-quote");
+    const vendorModalNotes = document.getElementById("vendor-modal-notes");
+    const vendorModalError = document.getElementById("vendor-modal-error");
+    const vendorModalDelete = document.getElementById("vendor-modal-delete");
 
     const nameInput = document.getElementById("name");
     const plannedInput = document.getElementById("planned");
@@ -856,11 +1250,15 @@
     const budgetPanel = document.getElementById("panel-budget");
     const guestPanel = document.getElementById("panel-guests");
     const guestListsPanel = document.getElementById("panel-guest-lists");
+    const vendorPanel = document.getElementById("panel-vendors");
     const guestFilters = { rsvp: "all", side: "all", bridal: "all" };
     const chartToggles = document.querySelectorAll(".chart-toggle button");
     let budgetView = localStorage.getItem("wedding-budget-view") || "planned";
+    let editingGuestDetails = null;
+    let editingVendorIndex = -1;
 
     let guests = normalizeGuests(JSON.parse(localStorage.getItem("wedding-guests") || "null") || []);
+    let vendors = normalizeVendors(JSON.parse(localStorage.getItem("wedding-vendors") || "null") || []);
     let brideName = localStorage.getItem("wedding-bride-name") || "Bride";
     let groomName = localStorage.getItem("wedding-groom-name") || "Groom";
     let firebaseReady = false;
@@ -893,6 +1291,25 @@
       return test.style.color ? input : fallback;
     }
 
+    function normalizeGuestName(name) {
+      return name.trim().replace(/\s+/g, " ").toLowerCase();
+    }
+
+    function hasDuplicateGuestName(name, plusOneName, ignoreIndex = -1) {
+      const normalizedName = normalizeGuestName(name);
+      const normalizedPlusOne = plusOneName ? normalizeGuestName(plusOneName) : "";
+      if (normalizedPlusOne && normalizedPlusOne === normalizedName) return true;
+      return guests.some((guest, index) => {
+        if (index === ignoreIndex) return false;
+        const guestName = normalizeGuestName(guest.name);
+        const guestPlusOne = guest.plusOneName ? normalizeGuestName(guest.plusOneName) : "";
+        return guestName === normalizedName
+          || guestName === normalizedPlusOne
+          || (normalizedPlusOne && guestPlusOne === normalizedPlusOne)
+          || (guestPlusOne && guestPlusOne === normalizedName);
+      });
+    }
+
     function updateStorage() {
       localStorage.setItem("wedding-budget", JSON.stringify(items));
       localStorage.setItem("wedding-budget-total", String(totalBudget));
@@ -906,12 +1323,153 @@
       pushUpdate();
     }
 
+    function updateVendorStorage() {
+      localStorage.setItem("wedding-vendors", JSON.stringify(vendors));
+      pushUpdate();
+    }
+
     function hasFirebaseConfig() {
       return !Object.values(FIREBASE_CONFIG).some((value) => String(value).includes("YOUR_"));
     }
 
+    function showGuestModal() {
+      guestModal.classList.remove("hidden");
+      guestModal.setAttribute("aria-hidden", "false");
+    }
+
+    function hideGuestModal() {
+      guestModal.classList.add("hidden");
+      guestModal.setAttribute("aria-hidden", "true");
+    }
+
+    function openGuestModal(index) {
+      const guest = guests[index];
+      if (!guest) return;
+      guestModalIndex.value = String(index);
+      guestModalName.value = guest.name || "";
+      guestModalPlusOne.value = guest.plusOneName || "";
+      guestModalPhone.value = guest.phone || "";
+      guestModalEmail.value = guest.email || "";
+      guestModalAddress.value = guest.address || "";
+      guestModalNotes.value = guest.notes || "";
+      showGuestModal();
+      guestModalName.focus();
+    }
+
     function isFilterActive(filterKey, value) {
       return guestFilters[filterKey] === value;
+    }
+
+    function populateVendorCategories(selected) {
+      if (!vendorModalCategory) return;
+      const categories = getVendorCategories();
+      vendorModalCategory.innerHTML = "";
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        vendorModalCategory.appendChild(option);
+      });
+      if (selected) vendorModalCategory.value = selected;
+    }
+
+    function showVendorModal() {
+      vendorModal.classList.remove("hidden");
+      vendorModal.setAttribute("aria-hidden", "false");
+    }
+
+    function hideVendorModal() {
+      vendorModal.classList.add("hidden");
+      vendorModal.setAttribute("aria-hidden", "true");
+    }
+
+    function openVendorModal(index) {
+      const vendor = vendors[index];
+      if (!vendor) return;
+      editingVendorIndex = index;
+      vendorModalIndex.value = String(index);
+      vendorModalName.value = vendor.name || "";
+      vendorModalContact.value = vendor.contact || "";
+      vendorModalPhone.value = vendor.phone || "";
+      vendorModalEmail.value = vendor.email || "";
+      vendorModalWebsite.value = vendor.website || "";
+      vendorModalQuote.value = vendor.quote ? String(vendor.quote) : "";
+      vendorModalNotes.value = vendor.notes || "";
+      vendorModalError.textContent = "";
+      vendorModalDelete.style.display = "inline-flex";
+      populateVendorCategories(vendor.category);
+      showVendorModal();
+      vendorModalName.focus();
+    }
+
+    function openNewVendorModal(category) {
+      editingVendorIndex = -1;
+      vendorModalIndex.value = "";
+      vendorModalName.value = "";
+      vendorModalContact.value = "";
+      vendorModalPhone.value = "";
+      vendorModalEmail.value = "";
+      vendorModalWebsite.value = "";
+      vendorModalQuote.value = "";
+      vendorModalNotes.value = "";
+      vendorModalError.textContent = "";
+      vendorModalDelete.style.display = "none";
+      populateVendorCategories(category);
+      showVendorModal();
+      vendorModalName.focus();
+    }
+
+    function getVendorCategories() {
+      const categories = [];
+      items.forEach((item) => {
+        if (item.name && !categories.includes(item.name)) {
+          categories.push(item.name);
+        }
+      });
+      vendors.forEach((vendor) => {
+        if (vendor.category && !categories.includes(vendor.category)) {
+          categories.push(vendor.category);
+        }
+      });
+      if (categories.length === 0) categories.push("General");
+      return categories;
+    }
+
+    function renderVendors() {
+      if (!vendorList) return;
+      vendorList.innerHTML = "";
+      if (vendors.length === 0) {
+        vendorList.innerHTML = "<div class=\"subtitle\">Add vendors to keep track of quotes and contacts.</div>";
+        return;
+      }
+
+      const categories = getVendorCategories();
+      categories.forEach((category) => {
+        const group = document.createElement("div");
+        group.className = "vendor-group";
+        group.innerHTML = `<h4>${category}</h4>`;
+        const grid = document.createElement("div");
+        grid.className = "vendor-grid";
+        vendors.forEach((vendor, index) => {
+          if (vendor.category !== category) return;
+          const tile = document.createElement("button");
+          tile.type = "button";
+          tile.className = "vendor-tile";
+          tile.dataset.index = String(index);
+          tile.setAttribute("aria-label", `${vendor.name} (${vendor.category})`);
+          tile.textContent = vendor.name || "Unnamed vendor";
+          grid.appendChild(tile);
+        });
+        const emptyTile = document.createElement("button");
+        emptyTile.type = "button";
+        emptyTile.className = "vendor-tile";
+        emptyTile.dataset.action = "add-vendor";
+        emptyTile.dataset.category = category;
+        emptyTile.textContent = "No vendor yet";
+        grid.appendChild(emptyTile);
+        group.appendChild(grid);
+        vendorList.appendChild(group);
+      });
     }
 
     function showAuthOverlay() {
@@ -950,6 +1508,7 @@
       const payload = {
         budget: { items, totalBudget },
         guests: { list: guests, brideName, groomName },
+        vendors: { list: vendors },
         meta: { updatedAt: Date.now(), updatedBy: clientId }
       };
       dbRef.set(payload).catch(() => {
@@ -970,11 +1529,15 @@
         brideName = data.guests.brideName || brideName;
         groomName = data.guests.groomName || groomName;
       }
+      if (data.vendors) {
+        vendors = normalizeVendors(data.vendors.list);
+      }
       localStorage.setItem("wedding-budget", JSON.stringify(items));
       localStorage.setItem("wedding-budget-total", String(totalBudget));
       localStorage.setItem("wedding-guests", JSON.stringify(guests));
       localStorage.setItem("wedding-bride-name", brideName);
       localStorage.setItem("wedding-groom-name", groomName);
+      localStorage.setItem("wedding-vendors", JSON.stringify(vendors));
       isApplyingRemote = false;
     }
 
@@ -1068,6 +1631,8 @@
       if (items.length === 0 || displayTotal === 0) {
         legend.innerHTML = "Add an expense to see the chart.";
       }
+
+      renderVendors();
     }
 
     function renderGuests() {
@@ -1114,6 +1679,7 @@
       filteredGuests.forEach(({ guest, index }) => {
         const row = document.createElement("div");
         row.className = "guest-row";
+        row.dataset.index = String(index);
         const sideLabel = guest.side === "bride" ? `${brideName}'s side` : `${groomName}'s side`;
         const bridalLabel = guest.bridalParty ? "Bridal party" : "Guest";
         const colorSwatch = guest.color ? `<span class="tag" style="background:${guest.color}; color:#fff; border-color:transparent;">Tag</span>` : "";
@@ -1136,6 +1702,7 @@
             <summary aria-label="Guest actions">⋯</summary>
             <div class="menu-items">
               <button data-action="edit-guest" data-index="${index}">Edit</button>
+              <button data-action="details-guest" data-index="${index}">Details</button>
               <button data-action="toggle-bridal" data-index="${index}">Toggle bridal</button>
               <button data-action="remove-guest" data-index="${index}">Remove</button>
             </div>
@@ -1207,8 +1774,26 @@
         guestSubtitle.textContent = "Add a guest name to continue.";
         return;
       }
+      if (hasDuplicateGuestName(name, plusOneName)) {
+        guestSubtitle.textContent = "Duplicate guest name detected. Check plus ones before adding.";
+        return;
+      }
 
-      guests.push({ name, side, rsvp, bridalParty, color: colorValue, plusOne, plusOneName });
+      const storedDetails = editingGuestDetails || {};
+      guests.push({
+        name,
+        side,
+        rsvp,
+        bridalParty,
+        color: colorValue,
+        plusOne,
+        plusOneName,
+        phone: storedDetails.phone || "",
+        email: storedDetails.email || "",
+        address: storedDetails.address || "",
+        notes: storedDetails.notes || ""
+      });
+      editingGuestDetails = null;
       updateGuestStorage();
       renderGuests();
       guestNameInput.value = "";
@@ -1218,6 +1803,7 @@
       guestPlusOneInput.checked = false;
       guestPlusOneNameInput.value = "";
     }
+
 
     function resetSample() {
       items = sample.map((item) => ({ ...item }));
@@ -1254,7 +1840,14 @@
 
     function handleGuestAction(event) {
       const button = event.target.closest("button");
-      if (!button) return;
+      if (!button) {
+        const row = event.target.closest(".guest-row");
+        if (!row || event.target.closest(".menu")) return;
+        const index = Number(row.dataset.index);
+        if (!Number.isFinite(index)) return;
+        openGuestModal(index);
+        return;
+      }
       const index = Number(button.dataset.index);
       if (!Number.isFinite(index)) return;
 
@@ -1279,10 +1872,20 @@
         guestColorInput.value = guest.color || "";
         guestPlusOneInput.checked = Boolean(guest.plusOne);
         guestPlusOneNameInput.value = guest.plusOneName || "";
+        editingGuestDetails = {
+          phone: guest.phone || "",
+          email: guest.email || "",
+          address: guest.address || "",
+          notes: guest.notes || ""
+        };
         guests.splice(index, 1);
         updateGuestStorage();
         renderGuests();
         guestNameInput.focus();
+      }
+
+      if (button.dataset.action === "details-guest") {
+        openGuestModal(index);
       }
     }
 
@@ -1301,6 +1904,7 @@
       budgetPanel.classList.toggle("active", target === "budget");
       guestPanel.classList.toggle("active", target === "guests");
       guestListsPanel.classList.toggle("active", target === "guests");
+      vendorPanel.classList.toggle("active", target === "vendors");
       localStorage.setItem("wedding-active-tab", target);
     }
 
@@ -1311,7 +1915,7 @@
     });
 
     const savedTab = localStorage.getItem("wedding-active-tab");
-    if (savedTab === "budget" || savedTab === "guests") {
+    if (savedTab === "budget" || savedTab === "guests" || savedTab === "vendors") {
       setActiveTab(savedTab);
     }
     if (hasFirebaseConfig()) {
@@ -1379,6 +1983,89 @@
     guestNameInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") addGuest();
     });
+    guestModalClose.addEventListener("click", hideGuestModal);
+    guestModal.addEventListener("click", (event) => {
+      if (event.target === guestModal) hideGuestModal();
+    });
+    guestModalForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const index = Number(guestModalIndex.value);
+      const guest = guests[index];
+      if (!guest) return;
+      const nextName = guestModalName.value.trim() || guest.name;
+      const nextPlusOne = guestModalPlusOne.value.trim();
+      if (hasDuplicateGuestName(nextName, nextPlusOne, index)) {
+        guestSubtitle.textContent = "Duplicate guest name detected. Check plus ones before saving.";
+        return;
+      }
+      guest.name = nextName;
+      guest.plusOneName = nextPlusOne;
+      guest.plusOne = Boolean(guest.plusOneName);
+      guest.phone = guestModalPhone.value.trim();
+      guest.email = guestModalEmail.value.trim();
+      guest.address = guestModalAddress.value.trim();
+      guest.notes = guestModalNotes.value.trim();
+      updateGuestStorage();
+      renderGuests();
+      hideGuestModal();
+    });
+    if (addVendorButton) {
+      addVendorButton.addEventListener("click", openNewVendorModal);
+    }
+    if (vendorList) {
+      vendorList.addEventListener("click", (event) => {
+        const tile = event.target.closest(".vendor-tile");
+        if (!tile) return;
+        if (tile.dataset.action === "add-vendor") {
+          openNewVendorModal(tile.dataset.category || "General");
+          return;
+        }
+        const index = Number(tile.dataset.index);
+        if (!Number.isFinite(index)) return;
+        openVendorModal(index);
+      });
+    }
+    vendorModalClose.addEventListener("click", hideVendorModal);
+    vendorModal.addEventListener("click", (event) => {
+      if (event.target === vendorModal) hideVendorModal();
+    });
+    vendorModalForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = vendorModalName.value.trim();
+      if (!name) {
+        vendorModalError.textContent = "Vendor name is required.";
+        return;
+      }
+      const vendorData = {
+        category: vendorModalCategory.value || "General",
+        name,
+        contact: vendorModalContact.value.trim(),
+        phone: vendorModalPhone.value.trim(),
+        email: vendorModalEmail.value.trim(),
+        website: vendorModalWebsite.value.trim(),
+        quote: Number(vendorModalQuote.value) || 0,
+        notes: vendorModalNotes.value.trim()
+      };
+      vendorModalError.textContent = "";
+      if (editingVendorIndex >= 0) {
+        vendors[editingVendorIndex] = vendorData;
+      } else {
+        vendors.push(vendorData);
+      }
+      updateVendorStorage();
+      renderVendors();
+      hideVendorModal();
+    });
+    vendorModalDelete.addEventListener("click", () => {
+      if (editingVendorIndex < 0) return;
+      const vendor = vendors[editingVendorIndex];
+      const label = vendor ? vendor.name : "this vendor";
+      if (!window.confirm(`Delete ${label}?`)) return;
+      vendors.splice(editingVendorIndex, 1);
+      updateVendorStorage();
+      renderVendors();
+      hideVendorModal();
+    });
     guestTotals.addEventListener("click", (event) => {
       const button = event.target.closest(".total-toggle");
       if (!button) return;
@@ -1388,6 +2075,28 @@
       guestFilters[filterKey] = guestFilters[filterKey] === filterValue ? "all" : filterValue;
       renderGuests();
     });
+    if (vendorList) {
+      vendorList.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button || button.dataset.action !== "save-vendor") return;
+        const row = button.closest(".vendor-row");
+        if (!row) return;
+        const category = row.dataset.category || "General";
+        const vendorData = { category };
+        row.querySelectorAll("[data-field]").forEach((input) => {
+          vendorData[input.dataset.field] = input.value.trim();
+        });
+        vendorData.quote = Number(vendorData.quote) || 0;
+        const existingIndex = vendors.findIndex((vendor) => vendor.category === category);
+        if (existingIndex >= 0) {
+          vendors[existingIndex] = vendorData;
+        } else {
+          vendors.push(vendorData);
+        }
+        updateVendorStorage();
+        renderVendors();
+      });
+    }
     chartToggles.forEach((button) => {
       button.addEventListener("click", () => {
         const view = button.dataset.view;

@@ -1431,8 +1431,9 @@
           categories.push(vendor.category);
         }
       });
-      if (categories.length === 0) categories.push("General");
-      return categories;
+      const filtered = categories.filter((category) => category.toLowerCase() !== "venue");
+      if (filtered.length === 0) filtered.push("General");
+      return filtered;
     }
 
     function renderVendors() {
@@ -1690,6 +1691,7 @@
         row.innerHTML = `
           <div>
             <strong>${star}${guest.name}</strong>
+            ${guest.address ? `<div class="subtitle">${guest.address}</div>` : ""}
             <div class="tags">
               <span class="tag">${sideLabel}</span>
               <span class="tag">${bridalLabel}</span>
